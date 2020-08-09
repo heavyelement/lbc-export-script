@@ -20,14 +20,13 @@ function ProgressBar {
 	printf "\rProgress : [${_fill// /#}${_empty// /-}] ${_progress}%%"
 }
 
-JSON_PP=`command -v jq`
-LBRYNET=`command -v lbrynet`
-PERL_AVAIL=`command -v perl`
-REGEX_PATTERN="s/: \"([\w]*)\"/\1/"
-MIN_ALLOWED_VALUE=20
+JSON_PP_AVAILABLE=`command -v jq`
+LBRYNET_AVAILABLE=`command -v lbrynet`
+TOKEN_EXTRACT_REGEX="s/: \"([\w]*)\"/\1/"
+MIN_TOKEN_LENGTH=20
 
 # Check if we have the dependencies
-if [ "$LBRYNET" == "" ]; then
+if [ "$LBRYNET_AVAILABLE" == "" ]; then
 	# Gracefully exit if `lbrynet` doesn't exist
 	echo "FATAL ERROR: It appears lbrynet doesn't exist on this system."
 	exit 1
@@ -35,7 +34,7 @@ fi
 
 # ==== VERSION CHECKING ====
 # # Check if we have the dependencies
-# if [ "$JSON_PP" == "" ]; then
+# if [ "$JSON_PP_AVAILABLE" == "" ]; then
 # 	# Gracefully exit if `jq` doesn't exist
 # 	echo "ERROR: It appears the JSON parsing command jq doesn't exist on this system."
 # 	exit 1
@@ -77,36 +76,45 @@ esac;
 
 # Tell the user this might take a minute...
 echo " -> Hang tight while we get your claims. This may take a few minutes..."
+
+# Get a list of all supports associated with the current wallet and store it as RAW_CLAIMS_ARRAY
 RAW_CLAIMS_ARRAY=`lbrynet support list --page_size=99999 | grep claim_id | uniq -c | sort -nr`
 
 # Let's clean up the list:
 UNIQUE_CLAIMS_ARRAY=($(echo "${RAW_CLAIMS_ARRAY[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
-echo "Found ${#UNIQUE_CLAIMS_ARRAY[@]} unique claims"
 
-# Nowe let's start our loop:
-echo "Processing claims. This will probably take a while..."
+# Tell the user how many claims were found
+echo " -> Found ${#UNIQUE_CLAIMS_ARRAY[@]} unique claims"
+
+# Now let's start our loop:
+echo " -> Processing claims..."
 COUNT=0
 for LINE in "${UNIQUE_CLAIMS_ARRAY[@]}";do
 	# Extract the claim_id
-	EXTRACTED_KEY=`echo ${LINE} | perl -pe "${REGEX_PATTERN}"`
+	EXTRACTED_KEY=`echo ${LINE} | perl -pe "${TOKEN_EXTRACT_REGEX}"`
+	
 	# Maintain an iteration count
 	COUNT=$((COUNT + 1))
+	
 	# Check if the extracted key meets the minimum allowed value
-	if [ `expr length $EXTRACTED_KEY` -lt $MIN_ALLOWED_VALUE ]; then
+	if [ `expr length $EXTRACTED_KEY` -lt $MIN_TOKEN_LENGTH ]; then
 		continue
 	fi
+	
 	# Substring to remove the "XXX", quotes and trailing comma
 	EXTRACTED_KEY=${EXTRACTED_KEY:1:40}
+
 	# Check if the user wants to move their claims to their wallet
 	if [ "${ABANDON_CLAIMS}" == "Y" ]; then
 		# Move the user's claims to their wallet
 		RESULT=`lbrynet support abandon --claim_id="$EXTRACTED_KEY"`
 	fi
+	
 	# Maintain a nice progress bar
 	ProgressBar ${COUNT} ${#UNIQUE_CLAIMS_ARRAY[@]}
 done
 
-echo "Completed"
-echo "Your LBC claims should read zero."
+echo " -> Finished!"
+echo "Your LBC claims should now be in your wallet."
 
 exit 0
