@@ -58,8 +58,9 @@ fi
 # ==== END VERSION CHECKING ====
 
 # Let's start this process
-echo "Welcome to the LBC Credit Export Script."
+echo "Welcome to the LBC Export Script."
 echo "Created by Gardiner Bryant (@TheLinuxGamer)"
+echo "DISCLAIMER: Use this script at your own risk!"
 
 # Abandonding the claim means the claim on your content is sent to your LBRY wallet
 echo "Do you want to move your LBC claims to your wallet? (Y/n)"
