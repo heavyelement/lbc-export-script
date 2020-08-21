@@ -13,4 +13,4 @@ First, need a bash command line (read: not Windows). You'll need to have LBRY in
 You need to have the `lbrynet` command available. If you installed LBRY through the AUR, you'll probably want to link `/opt/LBRY/resources/static/daemon/lbrynet` to `/usr/local/bin/` or something before running this script.
 
 ## What happens if something goes wrong?
-Use of this script is **entirely on you**. You are responsible for its responsible usage and you should inspect the script before executing it. I wrote this script for my own purposes, but it comes with **ABSOLUTELY NO WARRANTEE**. I can't be held responsible for lost credits or anything else that could possibly go wrong with this process.
+Use of this script is **entirely on you**. You are responsible for its responsible usage and you should inspect the script before executing it. I wrote this script for my own purposes, but it comes with **ABSOLUTELY NO WARRANTY**. I can't be held responsible for lost credits or anything else that could possibly go wrong with this process.
