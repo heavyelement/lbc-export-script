@@ -117,5 +117,6 @@ done
 
 echo " -> Finished!"
 echo "Your LBC claims should now be in your wallet."
+echo "If you like this script, you can donate LBC to bUNSBMs8UMF2kNrggTogbZsws4jZcVNwWK"
 
 exit 0
